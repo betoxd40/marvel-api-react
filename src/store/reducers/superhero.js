@@ -2,6 +2,7 @@
 
 // Actions
 export const types = {
+    HANDLE_CLICK: 'HANDLE_CLICK',
     GET_SUPERHEROES_REQUESTED: 'GET_SUPERHEROES_REQUESTED',
     GET_SUPERHEROES_SUCCEEDED: 'GET_SUPERHEROES_SUCCEEDED',
     GET_SUPERHEROES_FAILED: 'GET_SUPERHEROES_FAILED',
@@ -9,7 +10,8 @@ export const types = {
 
 
 const initialState = {
-    superheroesList: [],
+    superheroesList: null,
+    heroSelected: null,
     loading: false,
     error: false,
     success: false,
@@ -18,6 +20,9 @@ const initialState = {
 
 export default function reducer(state = initialState, action = {}) {
     switch (action.type) {
+        case types.HANDLE_CLICK: {
+            return { ...state, heroSelected: action.payload }
+        }
         case types.GET_SUPERHEROES_REQUESTED: {
             return { ...state, loading: true }
         }
@@ -43,4 +48,12 @@ export default function reducer(state = initialState, action = {}) {
         default:
             return state;
     }
+}
+
+// Actions Creators
+export function handleClick(hero) {
+    return {
+        type: types.HANDLE_CLICK,
+        payload: hero,
+    };
 }

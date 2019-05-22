@@ -1,68 +1,39 @@
 import React from 'react';
-import PropTypes from 'prop-types'
 import { connect } from 'react-redux';
-import { types as superheroTypes } from '../../store/reducers/superhero';
+import { bindActionCreators } from 'redux';
+import { types as superheroTypes, handleClick } from '../../store/reducers/superhero';
 import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import List from '../../components/List';
+import HeroDetails from '../../components/HeroDetails';
 import './styles.sass';
 
-class HeroInfo extends React.Component{
-    
-    state = {};
 
+class HeroInfo extends React.Component{
     componentDidMount(){
         this.props.getSuperheroes();
-        console.log(this.props.superheroesList);
     }
-    
-    render() {
 
+    render() {
         const {
             superheroesList,
+            heroSelected,
             loading,
+            actions,
         } = this.props;
 
         if (loading || superheroesList === null) {
             return <CircularProgress />
         }
-
         return(
-            <Grid container spacing={24}>
-                <Grid item xs={4}>
-                    <Card>
-                        <CardActionArea>
-                            <CardMedia
-                                component="img"
-                                alt="Contemplative Reptile"
-                                height="140"
-                                image="/static/images/cards/contemplative-reptile.jpg"
-                                title="Contemplative Reptile"
-                            />
-                            <CardContent>
-                                Lizard
-                                Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
-                                across all continents except Antarctica
-                            </CardContent>
-                        </CardActionArea>
-                        <CardActions>
-                            <Button size="small" color="primary">
-                                Share
-                            </Button>
-                            <Button size="small" color="primary">
-                                Learn More
-                            </Button>
-                        </CardActions>
-                    </Card>
+            <Grid container spacing={24} className={'super__Container'}>
+                <Grid item xs={3}>
+                    <h2 className={'super__Container__h2'}>Heroes</h2>
+                    <List list={superheroesList} onClickCard={actions.handleClick}/>
                 </Grid>
-                <Grid item xs={8}>
-                    item2
+                <Grid item xs={9}>
+                    <h2 className={'super__Container__h2'}>Hero Details</h2>     
+                    {heroSelected ? <HeroDetails heroInfo={heroSelected} /> : 'No Hero Selected!!'}
                 </Grid>
             </Grid>
         );
@@ -73,11 +44,15 @@ function mapStateToProps(state) {
     return {
         superheroesList: state.superhero.superheroesList,
         loading: state.superhero.loading,
+        heroSelected: state.superhero.heroSelected,
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
+        actions: bindActionCreators({
+            handleClick,
+        }, dispatch),
         getSuperheroes: () => dispatch({ type: superheroTypes.GET_SUPERHEROES_REQUESTED }),
     };
 }
